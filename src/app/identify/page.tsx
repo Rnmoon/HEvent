@@ -3,49 +3,56 @@ import { ArrowRight } from 'lucide-react'
 
 export default function IdentifyPage() {
   return (
-    <div className="flex items-center justify-center pt-10">
-      <div className="max-w-md w-full p-8 bg-white rounded-2xl shadow-lg border">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
-          <p className="text-gray-500 mt-2">Enter your details to register for events. We'll remember you on this device.</p>
+    <div className="flex items-center justify-center pt-20 px-4 min-h-[70vh]">
+      <div className="max-w-md w-full p-8 md:p-10 bg-[#0a0a0a] rounded-3xl shadow-2xl border border-white/10 relative overflow-hidden">
+        
+        {/* Abstract Glow */}
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent-yellow/20 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <div className="text-center mb-10 relative z-10">
+          <div className="w-16 h-16 bg-accent-yellow text-background font-black text-3xl flex items-center justify-center rounded-2xl mx-auto mb-6 rotate-3">
+            E
+          </div>
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">Get Connected</h1>
+          <p className="text-gray-400 font-medium">Join the frequency. Enter your details, no password required.</p>
         </div>
 
-        <form action={identifyUser} className="space-y-6">
+        <form action={identifyUser} className="space-y-6 relative z-10">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label htmlFor="name" className="block text-sm font-bold tracking-wide text-gray-300 mb-2 uppercase">Full Name</label>
             <input
               type="text"
               name="name"
               id="name"
               autoComplete="name"
               required
-              className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
-              placeholder="John Doe"
+              className="mt-1 block w-full bg-white/5 border border-white/10 text-white rounded-xl focus:ring-accent-yellow focus:border-accent-yellow p-4 outline-none transition-all placeholder-gray-600 font-medium"
+              placeholder="Richie Hawtin"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label htmlFor="email" className="block text-sm font-bold tracking-wide text-gray-300 mb-2 uppercase">Email Address</label>
             <input
               type="email"
               name="email"
               id="email"
               autoComplete="email"
               required
-              className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
-              placeholder="john@example.com"
+              className="mt-1 block w-full bg-white/5 border border-white/10 text-white rounded-xl focus:ring-accent-yellow focus:border-accent-yellow p-4 outline-none transition-all placeholder-gray-600 font-medium"
+              placeholder="richie@underground.com"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            className="w-full flex justify-center items-center gap-3 py-4 px-4 border text-base font-bold text-background bg-accent-yellow border-accent-yellow hover:bg-yellow-500 rounded-xl shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.5)] transition-all uppercase tracking-widest mt-8"
           >
-            Continue <ArrowRight size={16} />
+            Plug In <ArrowRight size={20} />
           </button>
         </form>
-        <p className="mt-6 text-xs text-center text-gray-400">
-          By continuing, you agree to our Terms of Service and Privacy Policy. No password required.
+        <p className="mt-8 text-xs text-center text-gray-500 font-medium relative z-10">
+          By continuing, you agree to our Terms of Service and Privacy Policy. Session secured locally.
         </p>
       </div>
     </div>

@@ -17,27 +17,45 @@ export default async function CulturalEventsPage() {
   const registeredEventIds = new Set(userRegistrations.map((r: any) => r.eventId))
 
   return (
-    <div className="max-w-6xl mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900">Cultural Fests</h1>
-        <p className="mt-2 text-gray-500">Showcase your talents and enjoy cultural performances.</p>
-      </div>
+    <div className="flex flex-col w-full -mt-8">
+      {/* Category Hero */}
+      <section className="relative w-full pt-40 pb-32 mb-16 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="/cultural.png" alt="Cultural Events" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+        </div>
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <span className="text-accent-yellow text-sm font-bold tracking-widest uppercase block mb-4">Live Performances</span>
+          <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mix-blend-screen">
+            Cultural Lineup
+          </h1>
+          <p className="mt-6 text-xl text-gray-300 font-medium">
+            Immerse yourself in artistic expression, hypnotic rhythms, and unforgettable theatricals.
+          </p>
+        </div>
+      </section>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event: any) => (
-          <EventCard 
-            key={event.id} 
-            event={event} 
-            isRegistered={registeredEventIds.has(event.id)} 
-          />
-        ))}
+      {/* Events Grid */}
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-24 relative z-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {events.map((event: any) => (
+            <EventCard 
+              key={event.id} 
+              event={event} 
+              isRegistered={registeredEventIds.has(event.id)} 
+            />
+          ))}
+        </div>
+        
+        {events.length === 0 && (
+           <div className="text-center py-32 text-gray-400 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
+              <h3 className="text-2xl font-bold text-white mb-2">The stage is empty</h3>
+              <p>Check back later for new cultural lineup announcements.</p>
+           </div>
+        )}
       </div>
-      
-      {events.length === 0 && (
-         <div className="text-center py-20 text-gray-500 bg-gray-50 rounded-xl border">
-            No cultural events available right now.
-         </div>
-      )}
     </div>
   )
 }

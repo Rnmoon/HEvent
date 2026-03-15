@@ -1,61 +1,187 @@
 import Link from 'next/link'
-import { Calendar, Trophy, Users, MoveRight } from 'lucide-react'
+import EventCard from '@/components/EventCard'
+import { prisma } from '@/lib/db'
+import { getCurrentUser } from '@/app/actions'
+import { Mail, Phone, MapPin } from 'lucide-react'
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser()
+  
+  // Fetch some events for the featured section
+  const events = await prisma.event.findMany({
+    take: 3,
+    orderBy: { eventDate: 'asc' }
+  })
+
+  // Get user registrations to pass to EventCard
+  let userRegistrations: string[] = []
+  if (user) {
+    const regs = await prisma.registration.findMany({
+      where: { userId: user.id },
+      select: { eventId: true }
+    })
+    userRegistrations = regs.map(r => r.eventId)
+  }
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col w-full -mt-8">
       {/* Hero Section */}
-      <section className="w-full py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl mb-16 text-center shadow-lg px-4">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-          Experience Events <br /> Without the Hassle
-        </h1>
-        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 text-blue-100">
-          Register for college games and cultural fests with just your name and email. No passwords to remember.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/events/games" className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-100 transition">
-            Explore Games
-          </Link>
-          <Link href="/events/cultural" className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-900 transition border border-blue-500">
-            Cultural Fests
-          </Link>
+      <section className="relative w-full pt-32 pb-64 overflow-hidden bg-gradient-to-br from-green-500 via-teal-700 to-indigo-900 border-b border-white/10">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 mix-blend-overlay"></div>
+        
+        <div className="relative z-10 flex flex-col items-center text-center px-4 max-w-5xl mx-auto">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 tracking-tighter mb-6 uppercase">
+            ELECRIC EEL <br/> FESTIVAL
+          </h1>
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-medium tracking-wide">
+            3 nights of premiere artistry, hypnotic craftsmanship, and underground games.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="#tickets" className="bg-accent-yellow hover:bg-yellow-500 text-background font-bold px-8 py-4 rounded-full shadow-lg shadow-accent-yellow/20 transition-transform hover:scale-105 flex items-center justify-center gap-2">
+              Get Tickets →
+            </Link>
+            <Link href="/events/cultural" className="bg-transparent border-2 border-white/30 text-white font-bold px-8 py-4 rounded-full hover:bg-white/10 transition-colors backdrop-blur-sm">
+              View Lineup
+            </Link>
+          </div>
+        </div>
+
+        {/* Hero Image Overlay */}
+        <div className="absolute left-1/2 -translate-x-1/2 -bottom-48 w-[90%] md:w-[70%] max-w-4xl h-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 z-20 group">
+          <img 
+            src="/hero.png" 
+            alt="Festival Crowd with Sparklers" 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80"></div>
         </div>
       </section>
 
-      {/* Feature Section */}
-      <section className="w-full grid md:grid-cols-3 gap-8 mb-16 max-w-5xl">
-        <div className="bg-white p-6 rounded-xl shadow-sm border text-center hover:shadow-md transition">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users size={24} />
-          </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Passwordless Entry</h3>
-          <p className="text-gray-500 text-sm">Join events instantly. Your browser remembers you automatically.</p>
+      {/* Spacer for the absolute image overlay */}
+      <div className="h-56"></div>
+
+      {/* Featured Artists/Events Section */}
+      <section className="w-full py-20 px-4">
+        <div className="text-center mb-16">
+          <span className="text-accent-yellow text-sm font-bold tracking-widest uppercase block mb-4">Highlights</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white">The Sound Architects <br/> Behind the Night</h2>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border text-center hover:shadow-md transition">
-          <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Trophy size={24} />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="rounded-xl overflow-hidden border-2 border-accent-yellow/30 relative group">
+             <img src="/cultural.png" alt="Cultural Event" className="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105" />
+             <div className="absolute inset-0 border-4 border-accent-yellow/0 group-hover:border-accent-yellow/100 transition-colors duration-500 z-10 m-2"></div>
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Competitive Esports</h3>
-          <p className="text-gray-500 text-sm">From Chess to Futsal, register for thrilling tournaments.</p>
-        </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border text-center hover:shadow-md transition">
-          <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Calendar size={24} />
+          <div className="space-y-6">
+            <h3 className="text-4xl font-bold text-white">Richie Hawtin</h3>
+            <p className="text-accent-yellow font-medium">Headlining Cultural Night</p>
+            <p className="text-gray-400 leading-relaxed text-lg">
+              Experience the hypnotic rhythms and premiere artistry of our top featured cultural events. Join the underground movement and secure your spot on the dance floor before tickets run out.
+            </p>
+            <Link href="/events/cultural" className="inline-block mt-4 text-white border-b-2 border-accent-yellow pb-1 font-bold hover:text-accent-yellow transition-colors">
+              Explore Cultural Lineup
+            </Link>
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Cultural Fests</h3>
-          <p className="text-gray-500 text-sm">Showcase your talents in singing, dancing, and drama.</p>
         </div>
       </section>
 
-      {/* Quick Links */}
-      <section className="w-full flex flex-col md:flex-row justify-between items-center p-8 bg-gray-50 rounded-xl border gap-4">
-        <div className="text-center md:text-left">
-          <h2 className="text-2xl font-bold text-gray-800">Ready to participate?</h2>
-          <p className="text-gray-500 mt-1">Check your registered events or find new ones.</p>
+      {/* Shows and Tickets (Event Cards) */}
+      <section id="tickets" className="w-full py-24 bg-[#0a0a0a] px-4 border-y border-white/5 relative overflow-hidden">
+        {/* Abstract background elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="mb-16">
+            <span className="text-accent-yellow text-sm font-bold tracking-widest uppercase block mb-4">Shows And Tickets</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-2xl">
+              Experience the Nights — Find Your City, Book Your Spot
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {events.map(event => (
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                isRegistered={userRegistrations.includes(event.id)} 
+              />
+            ))}
+          </div>
+          
+          {events.length === 0 && (
+             <p className="text-gray-500 text-center py-10">No upcoming events scheduled at the moment.</p>
+          )}
+
+          <div className="mt-16 text-center">
+             <Link href="/events/games" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition">
+                View All Events →
+             </Link>
+          </div>
         </div>
-        <Link href="/dashboard" className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium">
-          Get Started <MoveRight size={18} />
-        </Link>
+      </section>
+
+      {/* Contact Section */}
+      <section className="w-full py-24 bg-white px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div>
+            <span className="text-blue-600 text-sm font-bold tracking-widest uppercase block mb-4">Contact Us</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12">We would love to <br/> talk to you</h2>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+              <div>
+                <div className="flex items-center gap-3 text-gray-400 mb-3">
+                  <Mail size={20} />
+                  <span className="font-semibold text-gray-900">Email</span>
+                </div>
+                <a href="mailto:contact@eventhub.com" className="text-gray-600 hover:text-blue-600 transition">contact@eventhub.com</a>
+              </div>
+              <div>
+                <div className="flex items-center gap-3 text-gray-400 mb-3">
+                  <Phone size={20} />
+                  <span className="font-semibold text-gray-900">Phone</span>
+                </div>
+                <a href="tel:+1234567890" className="text-gray-600 hover:text-blue-600 transition">+1 (800) 123-4567</a>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="flex items-center gap-3 text-gray-400 mb-3">
+                  <MapPin size={20} />
+                  <span className="font-semibold text-gray-900">Headquarters</span>
+                </div>
+                <p className="text-gray-600 leading-relaxed max-w-xs">
+                  125 Monroe Str.<br/>
+                  Bldg. 125<br/>
+                  Sydney, Australia
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 shadow-sm">
+            <form className="space-y-6">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-500">Your Name *</label>
+                <input type="text" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Enter First Name" required />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-500">Email address</label>
+                <input type="email" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="you@example.com" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-500">Phone Number</label>
+                <input type="tel" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="+1 (555) 000-0000" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-500">Your message</label>
+                <textarea rows={4} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none" placeholder="How can we help?" required></textarea>
+              </div>
+              <button type="submit" className="bg-accent-yellow hover:bg-yellow-500 text-gray-900 font-bold px-8 py-3 rounded-full transition-transform hover:-translate-y-1 shadow-md w-max inline-flex items-center gap-2">
+                Submit →
+              </button>
+            </form>
+          </div>
+        </div>
       </section>
     </div>
   )

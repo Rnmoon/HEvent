@@ -1,15 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { getCurrentUser } from '@/app/actions'
 
-const inter = Inter({ subsets: ['latin'] })
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 
 export const metadata: Metadata = {
-  title: 'EventHub',
-  description: 'Register for events effortlessly.',
+  title: 'ELECRIC EEL FESTIVAL | EventHub',
+  description: 'Book your spot at the best events.',
 }
 
 export default async function RootLayout({
@@ -20,12 +20,11 @@ export default async function RootLayout({
   const user = await getCurrentUser()
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <body className={`${outfit.variable} font-sans bg-background text-foreground antialiased`}>
         <div className="flex flex-col min-h-screen">
-          {/* We pass a simplified user object to Client Components if needed */}
           <Navigation user={user ? { name: user.name, email: user.email } : null} />
-          <main className="flex-grow container mx-auto px-4 py-8">
+          <main className="flex-grow w-full">
             {children}
           </main>
           <Footer />
@@ -34,3 +33,4 @@ export default async function RootLayout({
     </html>
   )
 }
+

@@ -23,6 +23,7 @@ model Event {
   description   String
   eventDate     DateTime
   entryFee      Float          @default(0)
+  imageUrl      String?
   createdAt     DateTime       @default(now())
   registrations Registration[]
 }

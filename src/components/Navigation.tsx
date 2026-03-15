@@ -20,114 +20,122 @@ export default function Navigation({ user }: { user: { name: string, email: stri
   const toggleMenu = () => setIsOpen(!isOpen)
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="fixed w-full z-50 top-0 transition-all duration-300 bg-background/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold tracking-tight text-blue-600">
+        <div className="flex justify-between items-center h-20">
+          
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="bg-accent-yellow text-background w-10 h-10 flex items-center justify-center font-bold text-2xl transition-transform group-hover:scale-105">
+                E
+              </div>
+              <span className="text-xl font-bold tracking-widest text-foreground hidden sm:block uppercase">
                 EventHub
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    pathname === link.href
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+              </span>
+            </Link>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors ${
+                  pathname === link.href
+                    ? 'text-accent-yellow'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* User actions */}
+          <div className="hidden md:flex items-center space-x-6">
             {user ? (
-              <div className="flex items-center gap-4">
-                 <Link href="/dashboard" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+               <>
+                 <Link href="/dashboard" className="text-sm font-medium text-gray-300 hover:text-white transition">
                     Dashboard
                  </Link>
-                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                 <div className="h-10 w-10 rounded-full bg-accent-yellow flex items-center justify-center text-background font-bold shadow-lg shadow-accent-yellow/20">
                    {user.name.charAt(0).toUpperCase()}
                  </div>
-              </div>
+               </>
             ) : (
               <Link
                 href="/identify"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="bg-accent-yellow hover:bg-yellow-500 text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all hover:scale-105 shadow-md"
               >
-                Register / Login
+                Get Tickets
               </Link>
             )}
           </div>
-          <div className="-mr-2 flex items-center sm:hidden">
+
+          {/* Mobile menu button */}
+          <div className="flex md:hidden items-center">
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="text-gray-300 hover:text-white focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
-              {isOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
+              {isOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {isOpen && (
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
+        <div className="md:hidden bg-background border-b border-white/10 absolute w-full left-0 top-20 shadow-2xl">
+          <div className="px-4 pt-4 pb-6 space-y-2">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                className={`block px-3 py-3 rounded-lg text-base font-medium ${
                   pathname === link.href
-                    ? 'bg-blue-50 border-blue-500 text-blue-700'
-                    : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                    ? 'bg-white/5 text-accent-yellow'
+                    : 'text-gray-300 hover:bg-white/5 hover:text-white'
                 }`}
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-          </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
-            <div className="flex items-center px-4">
+
+            <div className="pt-4 mt-4 border-t border-white/10">
               {user ? (
-                <>
-                  <div className="flex-shrink-0">
-                     <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
-                       {user.name.charAt(0).toUpperCase()}
-                     </div>
+                <div className="flex items-center gap-4 px-3 py-2">
+                  <div className="h-12 w-12 rounded-full bg-accent-yellow flex items-center justify-center text-background font-bold text-xl">
+                    {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user.name}</div>
-                    <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                  <div>
+                    <div className="text-white font-medium">{user.name}</div>
+                    <div className="text-sm text-gray-400">{user.email}</div>
                   </div>
-                </>
+                </div>
               ) : (
                 <Link
                   href="/identify"
-                  className="block w-full text-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  className="block w-full text-center bg-accent-yellow hover:bg-yellow-500 text-background font-bold px-4 py-3 rounded-lg transition"
                   onClick={() => setIsOpen(false)}
                 >
-                  Register / Login
+                  Get Tickets
                 </Link>
               )}
             </div>
+            
             {user && (
-               <div className="mt-3 space-y-1">
-                  <Link
-                    href="/dashboard"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 sm:px-6"
-                    onClick={() => setIsOpen(false)}
-                  >
-                     Dashboard
-                  </Link>
-               </div>
+               <Link
+                 href="/dashboard"
+                 className="block px-3 py-3 mt-2 rounded-lg text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white"
+                 onClick={() => setIsOpen(false)}
+               >
+                  Dashboard
+               </Link>
             )}
           </div>
         </div>
