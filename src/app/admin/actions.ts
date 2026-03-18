@@ -37,11 +37,16 @@ export async function createEvent(formData: FormData) {
   const category = formData.get('category') as string
   const description = formData.get('description') as string
   const eventDate = formData.get('eventDate') as string
-  const entryFeeStr = formData.get('entryFee') as string
+  
+  const isTeamEventStr = formData.get('isTeamEvent') as string
+  const minTeamSizeStr = formData.get('minTeamSize') as string
+  const maxTeamSizeStr = formData.get('maxTeamSize') as string
 
   if (!eventName || !category || !description || !eventDate) throw new Error('All fields required')
   
-  const entryFee = entryFeeStr ? parseFloat(entryFeeStr) : 0
+  const isTeamEvent = isTeamEventStr === 'on'
+  const minTeamSize = minTeamSizeStr ? parseInt(minTeamSizeStr, 10) : null
+  const maxTeamSize = maxTeamSizeStr ? parseInt(maxTeamSizeStr, 10) : null
 
   await prisma.event.create({
     data: {
@@ -49,7 +54,9 @@ export async function createEvent(formData: FormData) {
       category,
       description,
       eventDate: new Date(eventDate),
-      entryFee
+      isTeamEvent,
+      minTeamSize,
+      maxTeamSize
     }
   })
 

@@ -3,17 +3,20 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id            String         @id @default(cuid())
   name          String
-  email         String         @unique
+  phoneNumber   String         @unique
   user_token    String         @unique
   createdAt     DateTime       @default(now())
   registrations Registration[]
+
+  @@index([phoneNumber])
+  @@index([user_token])
 }
 
 model Event {
@@ -22,10 +25,14 @@ model Event {
   category      String
   description   String
   eventDate     DateTime
-  entryFee      Float          @default(0)
   imageUrl      String?
+  isTeamEvent   Boolean        @default(false)
+  minTeamSize   Int?
+  maxTeamSize   Int?
   createdAt     DateTime       @default(now())
   registrations Registration[]
+
+  @@index([category])
 }
 
 model Registration {
@@ -34,12 +41,26 @@ model Registration {
   eventId      String
   phoneNumber  String?
   college      String?
-  paymentId    String?
-  amountPaid   Float    @default(0)
+  teamName     String?
   registeredAt DateTime @default(now())
 
-  user   User  @relation(fields: [userId], references: [id])
-  event  Event @relation(fields: [eventId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  event       Event        @relation(fields: [eventId], references: [id])
+  teamMembers TeamMember[]
 
   @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+model TeamMember {
+  id             String  @id @default(cuid())
+  registrationId String
+  name           String
+  email          String?
+  isCaptain      Boolean @default(false)
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
 }

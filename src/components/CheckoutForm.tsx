@@ -3,29 +3,69 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { registerEvent } from '@/app/actions'
-import { CreditCard, CheckCircle } from 'lucide-react'
+import { CreditCard, CheckCircle, Plus, Trash2 } from 'lucide-react'
 
-export default function CheckoutForm({ eventId, eventName, entryFee }: { eventId: string, eventName: string, entryFee: number }) {
+export default function CheckoutForm({ 
+  eventId, 
+  eventName, 
+  isTeamEvent = false,
+  minTeamSize = null,
+  maxTeamSize = null
+}: { 
+  eventId: string, 
+  eventName: string, 
+  isTeamEvent?: boolean,
+  minTeamSize?: number | null,
+  maxTeamSize?: number | null
+}) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  // Auto-initialize required teammates if it is a fixed size team
+  const initialMembers = isTeamEvent && minTeamSize && minTeamSize > 1
+    ? Array.from({ length: minTeamSize - 1 }).map(() => ({ name: '', email: '' }))
+    : []
+
+  const [teamMembers, setTeamMembers] = useState<{name: string, email: string}[]>(initialMembers)
   const router = useRouter()
+  
+  const handleAddMember = () => {
+    if (maxTeamSize && teamMembers.length + 1 >= maxTeamSize) return
+    setTeamMembers([...teamMembers, { name: '', email: '' }])
+  }
+
+  const handleRemoveMember = (index: number) => {
+    setTeamMembers(teamMembers.filter((_, i) => i !== index))
+  }
+
+  const updateMember = (index: number, field: 'name' | 'email', value: string) => {
+    const newMembers = [...teamMembers]
+    newMembers[index][field] = value
+    setTeamMembers(newMembers)
+  }
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     
+    // Validate min team size
+    if (isTeamEvent && minTeamSize && teamMembers.length + 1 < minTeamSize) {
+       alert(`Team must have at least ${minTeamSize} members.`)
+       setLoading(false)
+       return
+    }
+
     const formData = new FormData(e.currentTarget)
     const phoneNumber = formData.get('phoneNumber') as string
     const college = formData.get('college') as string
+    const teamName = isTeamEvent ? (formData.get('teamName') as string) : undefined
     
-    // Mock Payment ID if there is a fee
-    const paymentId = entryFee > 0 ? `TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}` : undefined
-    
+    const formattedMembers = teamMembers.map(m => ({ ...m, isCaptain: false }))
+
     const res = await registerEvent(eventId, {
       phoneNumber,
       college,
-      paymentId,
-      amountPaid: entryFee
+      teamName,
+      teamMembers: isTeamEvent && formattedMembers.length > 0 ? formattedMembers : undefined
     })
     
     if (res?.error) {
@@ -71,40 +111,83 @@ export default function CheckoutForm({ eventId, eventName, entryFee }: { eventId
           <label className="block text-xs font-bold tracking-widest text-gray-400 uppercase mb-2">College/University</label>
           <input type="text" name="college" required className="block w-full bg-[#0a0a0a] border border-white/10 text-white rounded-xl focus:ring-accent-yellow focus:border-accent-yellow p-4 outline-none transition-all placeholder-gray-700 font-medium" placeholder="Underground Academy" />
         </div>
+
+        {isTeamEvent && (
+          <div className="pt-8 mt-8 border-t border-white/10 space-y-8">
+            <div className="space-y-2">
+               <h3 className="text-xl font-bold text-white tracking-tight">Team Registration</h3>
+               <p className="text-sm font-medium text-gray-400 tracking-wide">Awesome, you're registering a team! You will be assigned as the Team Captain. Let's get your squad set up.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold tracking-widest text-accent-yellow uppercase mb-3">What is your team called?</label>
+              <input type="text" name="teamName" required className="block w-full bg-[#0a0a0a] border border-accent-yellow/30 text-white rounded-xl focus:ring-accent-yellow focus:border-accent-yellow p-4 outline-none transition-all placeholder-gray-700 font-medium" placeholder="Enter your team name (e.g., The Midnight Runners)" />
+            </div>
+
+            <div className="space-y-5 bg-white/5 p-6 rounded-2xl border border-white/5">
+               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                 <div className="space-y-1">
+                   <label className="block text-xs font-bold tracking-widest text-gray-300 uppercase">Who is joining you?</label>
+                   <p className="text-xs text-gray-500 font-medium">Current roster size: {teamMembers.length + 1}</p>
+                 </div>
+                 {(!maxTeamSize || teamMembers.length + 1 < maxTeamSize) && (
+                   <button type="button" onClick={handleAddMember} className="bg-accent-yellow/10 text-accent-yellow hover:bg-accent-yellow hover:text-background transition-colors px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                     <Plus size={16} /> Add Teammate
+                   </button>
+                 )}
+               </div>
+
+               {teamMembers.map((member, index) => (
+                 <div key={index} className="flex gap-4 bg-[#0a0a0a] p-5 rounded-xl items-start relative border border-white/5 group hover:border-white/10 transition-colors">
+                    <div className="flex-grow space-y-4">
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">Teammate {index + 1} • Full Name</label>
+                        <input 
+                          type="text" 
+                          required 
+                          placeholder="e.g. Jane Doe" 
+                          value={member.name}
+                          onChange={(e) => updateMember(index, 'name', e.target.value)}
+                          className="block w-full bg-transparent border-b border-white/10 text-white focus:border-accent-yellow pb-2 text-sm outline-none transition-all placeholder-gray-700" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">Email Address (Optional)</label>
+                        <input 
+                          type="email" 
+                          placeholder="They'll receive updates here" 
+                          value={member.email}
+                          onChange={(e) => updateMember(index, 'email', e.target.value)}
+                          className="block w-full bg-transparent border-b border-white/10 text-white focus:border-accent-yellow pb-2 text-sm outline-none transition-all placeholder-gray-700" 
+                        />
+                      </div>
+                    </div>
+                    {(!minTeamSize || (index + 1) >= minTeamSize) && (
+                      <button type="button" onClick={() => handleRemoveMember(index)} className="text-gray-600 hover:text-red-500 p-2 mt-6 bg-white/5 rounded-lg hover:bg-red-500/10 transition-colors" title="Remove Teammate">
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                 </div>
+               ))}
+               
+               {isTeamEvent && minTeamSize && (teamMembers.length + 1 < minTeamSize) && (
+                 <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center">
+                   <p className="text-xs text-red-400 font-bold uppercase tracking-widest">Action Required</p>
+                   <p className="text-sm font-medium text-red-300 mt-1">Please add {minTeamSize - (teamMembers.length + 1)} more squad member(s) to hit the minimum roster requirement of {minTeamSize}.</p>
+                 </div>
+               )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {entryFee > 0 && (
-        <div className="bg-[#0a0a0a] p-6 rounded-2xl border border-white/5 mt-8 space-y-5 relative z-10">
-           <h3 className="font-bold text-white flex items-center gap-3 uppercase tracking-wider text-sm mb-4">
-             <CreditCard size={18} className="text-accent-yellow" /> Payment Method
-           </h3>
-           <div>
-             <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-2">Card Number (Mock)</label>
-             <input type="text" required pattern="\d{16}" maxLength={16} className="block w-full bg-white/5 border border-white/10 text-white rounded-lg focus:ring-accent-yellow p-3 outline-none transition-all placeholder-gray-600 font-mono text-sm tracking-widest" placeholder="1234 5678 9101 1121" />
-           </div>
-           <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-2">Expiry</label>
-                <input type="text" required placeholder="MM/YY" className="block w-full bg-white/5 border border-white/10 text-white rounded-lg focus:ring-accent-yellow p-3 outline-none transition-all placeholder-gray-600 font-mono text-sm tracking-widest" />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-2">CVC</label>
-                <input type="password" required maxLength={3} className="block w-full bg-white/5 border border-white/10 text-white rounded-lg focus:ring-accent-yellow p-3 outline-none transition-all placeholder-gray-600 font-mono text-sm tracking-widest" placeholder="•••" />
-              </div>
-           </div>
-           <p className="text-[10px] uppercase tracking-widest text-gray-500 text-center mt-4">Simulation Gateway</p>
-        </div>
-      )}
-
-      {entryFee === 0 && (
-         <div className="bg-white/5 text-gray-300 p-5 rounded-2xl border border-white/10 flex justify-between items-center font-bold uppercase tracking-widest text-sm relative z-10">
-            <span>Entry Pass</span>
-            <span className="bg-accent-yellow text-background px-3 py-1 rounded bg-opacity-100">Free</span>
-         </div>
-      )}
+      <div className="bg-white/5 text-gray-300 p-5 rounded-2xl border border-white/10 flex justify-between items-center font-bold uppercase tracking-widest text-sm relative z-10">
+         <span>Entry Pass</span>
+         <span className="bg-accent-yellow text-background px-3 py-1 rounded bg-opacity-100">Free</span>
+      </div>
 
       <button disabled={loading} type="submit" className="w-full bg-accent-yellow hover:bg-yellow-500 text-background font-black uppercase tracking-widest py-4 mt-8 rounded-xl transition-all shadow-[0_0_20px_rgba(250,204,21,0.2)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none hover:shadow-[0_0_30px_rgba(250,204,21,0.4)] hover:-translate-y-1 relative z-10">
-        {loading ? 'Processing...' : (entryFee > 0 ? `Pay $${entryFee.toFixed(2)} & Connect` : 'Confirm Registration')}
+        {loading ? 'Processing...' : 'Confirm Registration'}
       </button>
     </form>
   )

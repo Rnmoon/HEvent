@@ -29,7 +29,7 @@ export default async function DashboardPage() {
           </div>
           <div>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-1">Welcome connected, <br className="hidden md:block"/><span className="text-accent-yellow">{user.name}!</span></h1>
-            <p className="text-gray-400 font-medium">{user.email}</p>
+            <p className="text-gray-400 font-medium">{user.phoneNumber}</p>
           </div>
         </div>
         <form action={logout} className="relative z-10 w-full md:w-auto">

@@ -6,36 +6,32 @@ import { redirect } from 'next/navigation'
 
 export async function identifyUser(formData: FormData) {
   const name = formData.get('name') as string
-  const email = formData.get('email') as string
+  const phoneNumber = formData.get('phoneNumber') as string
 
-  if (!name || !email) {
-    throw new Error('Name and email are required')
+  if (!name || !phoneNumber) {
+    throw new Error('Name and phone number are required')
   }
 
   // Generate a random token
   const token = crypto.randomUUID()
 
   try {
-    // Check if email already exists
+    // Check if phoneNumber already exists
     let user = await prisma.user.findUnique({
-      where: { email }
+      where: { phoneNumber }
     })
 
     if (!user) {
       user = await prisma.user.create({
         data: {
           name,
-          email,
+          phoneNumber,
           user_token: token
         }
       })
     } else {
-      // If user exists, update token or just reuse? Let's simply reuse the new token or keep old
-      // Wait, the requirement says "first visit only" and "identify returning users by token".
-      // But if they lost token and re-enter email, we should probably update their token
-      // so they can log in again.
       user = await prisma.user.update({
-        where: { email },
+        where: { phoneNumber },
         data: { user_token: token }
       })
     }
@@ -56,17 +52,26 @@ export async function identifyUser(formData: FormData) {
   redirect('/dashboard')
 }
 
+import { unstable_cache } from 'next/cache'
+
 export async function getCurrentUser() {
   const cookieStore = await cookies()
   const token = cookieStore.get('user_token')?.value
 
   if (!token) return null
 
-  const user = await prisma.user.findUnique({
-    where: { user_token: token }
-  })
+  // Cache user data to prevent hitting the DB on every page load
+  const getCachedUser = unstable_cache(
+    async (userToken: string) => {
+      return await prisma.user.findUnique({
+        where: { user_token: userToken }
+      })
+    },
+    ['current-user'],
+    { tags: ['user'], revalidate: 60 } // Revalidate every 60 seconds
+  )
 
-  return user
+  return getCachedUser(token)
 }
 
 export async function logout() {
@@ -75,7 +80,9 @@ export async function logout() {
   redirect('/')
 }
 
-export async function registerEvent(eventId: string, details: { phoneNumber: string, college: string, paymentId?: string, amountPaid: number }) {
+import { revalidatePath } from 'next/cache'
+
+export async function registerEvent(eventId: string, details: { phoneNumber: string, college: string, teamName?: string, teamMembers?: Array<{name: string, email: string, isCaptain?: boolean}> }) {
   const user = await getCurrentUser()
   if (!user) throw new Error('Not authenticated')
 
@@ -86,13 +93,21 @@ export async function registerEvent(eventId: string, details: { phoneNumber: str
         eventId: eventId,
         phoneNumber: details.phoneNumber,
         college: details.college,
-        paymentId: details.paymentId,
-        amountPaid: details.amountPaid,
+        teamName: details.teamName || null,
+        teamMembers: details.teamMembers ? {
+           create: details.teamMembers
+        } : undefined
       }
     })
+    
+    // Invalidate the cache for user's dashboard and my-events so the UI updates
+    revalidatePath('/dashboard')
+    revalidatePath('/my-events')
+    revalidatePath(`/events/${eventId}`)
+    
     return { success: true }
-  } catch (error) {
-    console.error('Failed to register:', error)
+  } catch (error: any) {
+    console.error('Failed to register:', error?.message || error)
     return { error: 'Registration failed or already registered' }
   }
 }

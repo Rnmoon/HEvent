@@ -23,7 +23,7 @@ export default async function RootLayout({
     <html lang="en" className="dark">
       <body className={`${outfit.variable} font-sans bg-background text-foreground antialiased`}>
         <div className="flex flex-col min-h-screen">
-          <Navigation user={user ? { name: user.name, email: user.email } : null} />
+          <Navigation user={user ? { name: user.name, phoneNumber: user.phoneNumber } : null} />
           <main className="flex-grow w-full">
             {children}
           </main>

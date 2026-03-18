@@ -8,6 +8,39 @@ const nextConfig: NextConfig = {
       allowedOrigins,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self' 'unsafe-eval' 'unsafe-inline' https://images.unsplash.com; img-src 'self' data: https://images.unsplash.com;",
+          },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;

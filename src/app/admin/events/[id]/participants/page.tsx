@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Download, Users } from 'lucide-react'
 
 export default async function AdminParticipantsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -13,7 +13,10 @@ export default async function AdminParticipantsPage({ params }: { params: Promis
     where: { id },
     include: {
       registrations: {
-        include: { user: true },
+        include: { 
+          user: true,
+          teamMembers: true 
+        },
         orderBy: { registeredAt: 'desc' }
       }
     }
@@ -23,7 +26,7 @@ export default async function AdminParticipantsPage({ params }: { params: Promis
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
          <div className="flex items-center gap-4">
            <Link href="/admin" className="text-gray-500 hover:text-gray-900 bg-gray-100 p-2 rounded-full transition">
               <ArrowLeft size={20} />
@@ -32,19 +35,24 @@ export default async function AdminParticipantsPage({ params }: { params: Promis
              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700 flex items-center gap-2">
                Participants
              </h1>
-             <p className="text-sm text-gray-500">{event.eventName} • {event.category}</p>
+             <p className="text-sm text-gray-500">{event.eventName} • {event.category} {event.isTeamEvent && <span className="text-blue-600 font-medium"> (Team Event)</span>}</p>
            </div>
          </div>
+         <a 
+           href={`/api/export/${event.id}`} 
+           className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition"
+         >
+           <Download size={18} /> Export Excel
+         </a>
       </div>
 
       <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone & College</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Info</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participant / Team</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{event.isTeamEvent ? 'Captain / Members' : 'Details'}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered At</th>
             </tr>
           </thead>
@@ -54,27 +62,50 @@ export default async function AdminParticipantsPage({ params }: { params: Promis
                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No participants yet.</td>
               </tr>
             )}
-            {event.registrations.map((reg: any) => (
-              <tr key={reg.id} className="hover:bg-gray-50 transition">
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{reg.user.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.user.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  <div className="font-medium">{reg.phoneNumber || 'N/A'}</div>
-                  <div className="text-xs">{reg.college || 'N/A'}</div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {reg.amountPaid > 0 ? (
-                     <div>
-                       <div className="font-medium text-green-600">${reg.amountPaid.toFixed(2)}</div>
-                       <div className="text-xs font-mono">{reg.paymentId}</div>
-                     </div>
-                  ) : (
-                     <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-semibold">Free</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(reg.registeredAt).toLocaleString()}</td>
-              </tr>
-            ))}
+            {event.registrations.map((reg: any) => {
+              const isTeam = event.isTeamEvent && reg.teamName
+
+              return (
+                <tr key={reg.id} className="hover:bg-gray-50 transition">
+                  <td className="px-6 py-4">
+                    {isTeam ? (
+                      <div>
+                        <div className="font-bold text-gray-900 flex items-center gap-2">
+                          <Users size={16} className="text-blue-500" /> {reg.teamName}
+                        </div>
+                        <div className="text-xs text-blue-600 font-medium mt-1">Team of {1 + reg.teamMembers.length}</div>
+                      </div>
+                    ) : (
+                      <div className="font-medium text-gray-900">{reg.user.name}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="font-medium">{reg.user.phoneNumber}</div>
+                    <div className="text-xs">{reg.phoneNumber || 'N/A'}</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {isTeam ? (
+                      <details className="cursor-pointer">
+                        <summary className="font-medium text-gray-700 select-none outline-none">View Roster</summary>
+                        <div className="mt-2 pl-2 border-l-2 border-blue-200 space-y-2">
+                          <div>
+                            <span className="text-xs font-bold text-gray-700 bg-gray-100 px-1 py-0.5 rounded">Capt</span> <span className="font-medium text-gray-900">{reg.user.name}</span>
+                          </div>
+                          {reg.teamMembers.map((member: any) => (
+                            <div key={member.id}>
+                              <span className="text-xs font-bold text-gray-500 bg-gray-50 px-1 py-0.5 rounded border">Mem</span> <span className="text-gray-700">{member.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    ) : (
+                       <div className="text-sm">{reg.college || 'N/A'}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(reg.registeredAt).toLocaleString()}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

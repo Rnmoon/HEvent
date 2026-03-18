@@ -35,11 +35,30 @@ export default async function NewEventPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Event Date</label>
             <input type="datetime-local" name="eventDate" required className="block w-full border border-gray-300 rounded-md p-2.5 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Entry Fee ($)</label>
-            <input type="number" step="0.01" min="0" defaultValue="0" name="entryFee" required className="block w-full border border-gray-300 rounded-md p-2.5 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" />
+
+
+          <div className="pt-4 border-t border-gray-200">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Team Rules (Optional)</h3>
+            <div className="flex items-center mb-4">
+              <input type="checkbox" id="isTeamEvent" name="isTeamEvent" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+              <label htmlFor="isTeamEvent" className="ml-2 block text-sm text-gray-900 font-medium">
+                This is a Team Event
+              </label>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Min Team Size</label>
+                <input type="number" min="1" name="minTeamSize" className="block w-full border border-gray-300 rounded-md p-2.5 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 2" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Max Team Size</label>
+                <input type="number" min="1" name="maxTeamSize" className="block w-full border border-gray-300 rounded-md p-2.5 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 5" />
+              </div>
+            </div>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow hover:bg-blue-700 transition">
+
+          <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow hover:bg-blue-700 transition mt-6">
             Save Event
           </button>
         </form>

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
-export default function Navigation({ user }: { user: { name: string, email: string } | null }) {
+export default function Navigation({ user }: { user: { name: string, phoneNumber: string } | null }) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -114,7 +114,7 @@ export default function Navigation({ user }: { user: { name: string, email: stri
                   </div>
                   <div>
                     <div className="text-white font-medium">{user.name}</div>
-                    <div className="text-sm text-gray-400">{user.email}</div>
+                    <div className="text-sm text-gray-400">{user.phoneNumber}</div>
                   </div>
                 </div>
               ) : (

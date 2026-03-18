@@ -32,15 +32,17 @@ export default function IdentifyPage() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-bold tracking-wide text-gray-300 mb-2 uppercase">Email Address</label>
+            <label htmlFor="phoneNumber" className="block text-sm font-bold tracking-wide text-gray-300 mb-2 uppercase">Phone Number</label>
             <input
-              type="email"
-              name="email"
-              id="email"
-              autoComplete="email"
+              type="tel"
+              name="phoneNumber"
+              id="phoneNumber"
+              autoComplete="tel"
+              pattern="[0-9]{10}"
               required
+              title="10 digit mobile number"
               className="mt-1 block w-full bg-white/5 border border-white/10 text-white rounded-xl focus:ring-accent-yellow focus:border-accent-yellow p-4 outline-none transition-all placeholder-gray-600 font-medium"
-              placeholder="richie@underground.com"
+              placeholder="9876543210"
             />
           </div>
 

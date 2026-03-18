@@ -65,17 +65,18 @@ export default async function EventCheckoutPage({ params }: { params: Promise<{ 
                     <span className="text-gray-500 font-medium text-sm uppercase tracking-wider">Participant</span>
                     <span className="font-bold text-white max-w-[150px] truncate text-right">{user.name}</span>
                  </div>
-                 
-                 <div className="flex justify-between items-center text-xl pt-6 mt-6 border-t border-white/10">
-                    <span className="text-gray-300 font-black uppercase tracking-wider">Total Due</span>
-                    <span className="font-black text-accent-yellow">{event.entryFee > 0 ? `$${event.entryFee.toFixed(2)}` : 'FREE'}</span>
-                 </div>
               </div>
             </div>
          </div>
          
          <div className="lg:col-span-3">
-            <CheckoutForm eventId={event.id} eventName={event.eventName} entryFee={event.entryFee} />
+            <CheckoutForm 
+              eventId={event.id} 
+              eventName={event.eventName} 
+              isTeamEvent={event.isTeamEvent}
+              minTeamSize={event.minTeamSize}
+              maxTeamSize={event.maxTeamSize}
+            />
          </div>
       </div>
     </div>
