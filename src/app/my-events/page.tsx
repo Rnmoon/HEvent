@@ -9,11 +9,16 @@ export default async function MyEventsPage() {
   const user = await getCurrentUser()
   if (!user) return null
 
-  const myRegistrations = await prisma.registration.findMany({
-    where: { userId: user.id },
-    include: { event: true },
-    orderBy: { event: { eventDate: 'asc' } }
-  })
+  let myRegistrations: any[] = []
+  try {
+    myRegistrations = await prisma.registration.findMany({
+      where: { userId: user.id },
+      include: { event: true },
+      orderBy: { event: { eventDate: 'asc' } }
+    })
+  } catch (error) {
+    console.error('Failed to fetch my-events registrations:', error)
+  }
 
   // Server action to delete
   async function removeRegistration(formData: FormData) {

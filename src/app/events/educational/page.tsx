@@ -4,15 +4,27 @@ import { getCurrentUser } from '@/app/actions'
 
 export default async function EducationalEventsPage() {
   const user = await getCurrentUser()
-  const events = await prisma.event.findMany({
-    where: { category: 'Educational' },
-    orderBy: { eventDate: 'asc' }
-  })
+  let events: any[] = []
+  try {
+    events = await prisma.event.findMany({
+      where: { category: 'Educational' },
+      orderBy: { eventDate: 'asc' }
+    })
+  } catch (error) {
+    console.error('Failed to fetch educational events:', error)
+  }
 
   // Get user's registrations to determine if they already registered
-  const userRegistrations = user 
-    ? await prisma.registration.findMany({ where: { userId: user.id } })
-    : []
+  let userRegistrations: any[] = []
+  if (user) {
+    try {
+      userRegistrations = await prisma.registration.findMany({ 
+        where: { userId: user.id } 
+      })
+    } catch (error) {
+      console.error('Failed to fetch user registrations for educational events:', error)
+    }
+  }
     
   const registeredEventIds = new Set(userRegistrations.map((r: any) => r.eventId))
 

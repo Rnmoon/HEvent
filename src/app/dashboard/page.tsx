@@ -9,12 +9,17 @@ export default async function DashboardPage() {
   const user = await getCurrentUser()
   if (!user) return null
 
-  const myRegistrations = await prisma.registration.findMany({
-    where: { userId: user.id },
-    include: { event: true },
-    orderBy: { registeredAt: 'desc' },
-    take: 3
-  })
+  let myRegistrations: any[] = []
+  try {
+    myRegistrations = await prisma.registration.findMany({
+      where: { userId: user.id },
+      include: { event: true },
+      orderBy: { registeredAt: 'desc' },
+      take: 3
+    })
+  } catch (error) {
+    console.error('Failed to fetch dashboard registrations:', error)
+  }
 
   return (
     <div className="space-y-12 max-w-7xl mx-auto py-8 px-4">

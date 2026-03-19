@@ -9,10 +9,15 @@ export default async function AdminDashboard() {
   const cookieStore = await cookies()
   if (cookieStore.get('admin_token')?.value !== 'true') redirect('/admin/login')
 
-  const events = await prisma.event.findMany({
-    include: { _count: { select: { registrations: true } } },
-    orderBy: { eventDate: 'desc' }
-  })
+  let events: any[] = []
+  try {
+    events = await prisma.event.findMany({
+      include: { _count: { select: { registrations: true } } },
+      orderBy: { eventDate: 'desc' }
+    })
+  } catch (error) {
+    console.error('Failed to fetch admin events:', error)
+  }
 
   return (
     <div>

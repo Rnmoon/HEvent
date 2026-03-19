@@ -11,19 +11,28 @@ export default async function Home() {
   const user = await getCurrentUser()
   
   // Fetch some events for the featured section
-  const events = await prisma.event.findMany({
-    take: 3,
-    orderBy: { eventDate: 'asc' }
-  })
+  let events: any[] = []
+  try {
+    events = await prisma.event.findMany({
+      take: 3,
+      orderBy: { eventDate: 'asc' }
+    })
+  } catch (error) {
+    console.error('Failed to fetch featured events:', error)
+  }
 
   // Get user registrations to pass to EventCard
   let userRegistrations: string[] = []
   if (user) {
-    const regs = await prisma.registration.findMany({
-      where: { userId: user.id },
-      select: { eventId: true }
-    })
-    userRegistrations = regs.map(r => r.eventId)
+    try {
+      const regs = await prisma.registration.findMany({
+        where: { userId: user.id },
+        select: { eventId: true }
+      })
+      userRegistrations = regs.map(r => r.eventId)
+    } catch (error) {
+      console.error('Failed to fetch user registrations:', error)
+    }
   }
 
   return (

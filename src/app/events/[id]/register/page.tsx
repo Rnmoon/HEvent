@@ -10,21 +10,32 @@ export default async function EventCheckoutPage({ params }: { params: Promise<{ 
   const user = await getCurrentUser()
   if (!user) redirect('/identify')
 
-  const event = await prisma.event.findUnique({
-    where: { id }
-  })
+  let event = null
+  try {
+    event = await prisma.event.findUnique({
+      where: { id }
+    })
+  } catch (error) {
+    console.error('Failed to fetch event for registration:', error)
+    return <div className="text-center p-16 text-white font-bold text-2xl">Database connection error. Please try again later.</div>
+  }
 
   if (!event) return <div className="text-center p-16 text-white font-bold text-2xl">Event not found</div>
 
   // Check if already registered
-  const existingRegistration = await prisma.registration.findUnique({
-    where: {
-      userId_eventId: {
-        userId: user.id,
-        eventId: event.id
+  let existingRegistration = null
+  try {
+    existingRegistration = await prisma.registration.findUnique({
+      where: {
+        userId_eventId: {
+          userId: user.id,
+          eventId: event.id
+        }
       }
-    }
-  })
+    })
+  } catch (error) {
+    console.error('Failed to check existing registration:', error)
+  }
 
   if (existingRegistration) {
     return (
