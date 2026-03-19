@@ -2,6 +2,7 @@ import Link from 'next/link'
 import EventCard from '@/components/EventCard'
 import HeroSlider from '@/components/HeroSlider'
 import EventGallery from '@/components/EventGallery'
+import CommitteeMembers from '@/components/CommitteeMembers'
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/app/actions'
 import { Mail, Phone, MapPin } from 'lucide-react'
@@ -97,6 +98,7 @@ export default async function Home() {
       </section>
 
       <EventGallery />
+      <CommitteeMembers />
     </div>
   )
 }

@@ -50,7 +50,7 @@ export default function IdentifyPage() {
             type="submit"
             className="w-full flex justify-center items-center gap-3 py-4 px-4 border text-base font-bold text-background bg-accent-blue border-accent-blue hover:bg-blue-500 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all uppercase tracking-widest mt-8"
           >
-            Plug In <ArrowRight size={20} />
+            Log In <ArrowRight size={20} />
           </button>
         </form>
         <p className="mt-8 text-xs text-center text-gray-500 font-medium relative z-10">

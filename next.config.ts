@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'plus.unsplash.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'assets.vogue.in',
       },
     ],
@@ -39,7 +43,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' 'unsafe-eval' 'unsafe-inline' https://images.unsplash.com https://assets.vogue.in; img-src 'self' data: https://images.unsplash.com https://assets.vogue.in;",
+            value: "default-src 'self' 'unsafe-eval' 'unsafe-inline' https://images.unsplash.com https://plus.unsplash.com https://assets.vogue.in; img-src 'self' data: https://images.unsplash.com https://plus.unsplash.com https://assets.vogue.in;",
           },
         ],
       },

@@ -34,7 +34,7 @@ export default async function DashboardPage() {
         </div>
         <form action={logout} className="relative z-10 w-full md:w-auto">
            <button className="flex items-center gap-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 px-6 py-3 rounded-xl transition font-bold text-sm uppercase tracking-widest w-full justify-center border border-red-500/30">
-             <LogOut size={18} /> Disconnect
+             <LogOut size={18} /> Logout
            </button>
         </form>
       </div>

@@ -2,190 +2,174 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Maximize2, X, Plus } from 'lucide-react'
+import Link from 'next/link'
+import { X, Plus, Instagram, Twitter, PlayCircle } from 'lucide-react'
 
-// Images from public/images/past/
-const allImages = [
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.24 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.25 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.25 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.26 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.27 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.27 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.28 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.28 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.29 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.29 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.30 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.31 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.31 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.32 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.32 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.33 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.34 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.34 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.35 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.35 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.36 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.36 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.37 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.38 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.38 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.39 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.40 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.41 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.42 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.44 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.45 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.46 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.47 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.48 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.48 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.51 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.51 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.56 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.56 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.57 AM (1).jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.57 AM.jpeg',
-  '/images/past/WhatsApp Image 2026-03-16 at 11.02.59 AM.jpeg',
-]
+interface GalleryItemData {
+  id: number;
+  src: string;
+  title?: string;
+  subtitle?: string;
+  color?: string;
+  icon?: 'instagram' | 'x' | 'shorts';
+  span?: string;
+  type?: 'image' | 'text' | 'social';
+}
 
-// The first 14 will be used for the hero layout
-const fittedImages = allImages.slice(0, 14)
-// The center image
-const centerImage = '/images/past/WhatsApp Image 2026-03-16 at 11.02.31 AM.jpeg'
+const galleryItems: GalleryItemData[] = [
+  {
+    id: 1,
+    src: '/images/past/WhatsApp Image 2026-03-16 at 11.02.24 AM.jpeg',
+    span: 'md:col-span-2 md:row-span-2',
+    type: 'social'
+  },
+  {
+    id: 2,
+    src: '',
+    title: 'Signs That Changes The World',
+    color: 'bg-blue-100',
+    type: 'text'
+  },
+  {
+    id: 3,
+    src: '/images/past/WhatsApp Image 2026-03-16 at 11.02.25 AM.jpeg',
+    type: 'image'
+  },
+  {
+    id: 4,
+    src: '/images/past/WhatsApp Image 2026-03-16 at 11.02.32 AM.jpeg',
+    title: 'Dive into Culture Activities',
+    span: 'md:row-span-2',
+    type: 'image'
+  },
+  {
+    id: 5,
+    src: '',
+    title: 'Featured Media Stories',
+    color: 'bg-yellow-100',
+    type: 'text'
+  },
+  {
+    id: 6,
+    src: '/images/past/WhatsApp Image 2026-03-16 at 11.02.35 AM.jpeg',
+    title: 'Highlights',
+    span: 'md:row-span-2',
+    type: 'social'
+  },
+  {
+    id: 7,
+    src: '/images/past/WhatsApp Image 2026-03-16 at 11.02.57 AM.jpeg',
+    color: 'bg-emerald-500',
+    span: 'md:row-span-2',
+    type: 'social'
+  },
+];
 
 export default function EventGallery() {
   const [activeImage, setActiveImage] = useState<string | null>(null)
-  const [showAll, setShowAll] = useState(false)
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setActiveImage(null)
-        setShowAll(false)
-      }
-    }
-    if (activeImage || showAll) {
-      window.addEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeImage, showAll])
 
   return (
-    <>
-      <section className="w-full py-32 bg-[#e0e0e0] px-4 relative overflow-hidden min-h-[900px]">
-        {/* Grain Overlay */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="relative w-full aspect-[16/10] md:aspect-[16/8] lg:aspect-[16/7]">
-            
-            {/* Center Image (Large) */}
-            <div 
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[45%] aspect-[16/11] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-20 group cursor-pointer border-4 border-white/10"
-              onClick={() => setActiveImage(centerImage)}
-            >
-              <Image src={centerImage} alt="Featured" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-                <h3 className="text-white text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-[0.2em] drop-shadow-2xl text-center px-4 leading-tight">
-                  JAYANTI <br className="md:hidden" /> 2025
-                </h3>
-              </div>
-            </div>
-
-            {/* Surrounding Images - Positioned relative to center */}
-            {/* Top Row */}
-            <GalleryItem src={fittedImages[0]} style={{ top: '0%', left: '15%', width: '10%', height: '22%' }} onClick={() => setActiveImage(fittedImages[0])} />
-            <GalleryItem src={fittedImages[1]} style={{ top: '0%', left: '28%', width: '12%', height: '25%' }} onClick={() => setActiveImage(fittedImages[1])} />
-            <GalleryItem src={fittedImages[2]} style={{ top: '-10%', left: '45%', width: '11%', height: '26%' }} onClick={() => setActiveImage(fittedImages[2])} />
-            <GalleryItem src={fittedImages[3]} style={{ top: '0%', left: '60%', width: '12%', height: '27%' }} onClick={() => setActiveImage(fittedImages[3])} />
-            <GalleryItem src={fittedImages[4]} style={{ top: '8%', left: '76%', width: '10%', height: '24%' }} onClick={() => setActiveImage(fittedImages[4])} />
-
-            {/* Middle Sides */}
-            <GalleryItem src={fittedImages[5]} style={{ top: '35%', left: '10%', width: '10%', height: '23%' }} onClick={() => setActiveImage(fittedImages[5])} />
-            <GalleryItem src={fittedImages[6]} style={{ top: '65%', left: '10%', width: '10%', height: '22%' }} onClick={() => setActiveImage(fittedImages[6])} />
-            
-            <GalleryItem src={fittedImages[7]} style={{ top: '33%', right: '10%', width: '10%', height: '22%' }} onClick={() => setActiveImage(fittedImages[7])} />
-            <GalleryItem src={fittedImages[8]} style={{ top: '64%', right: '10%', width: '10%', height: '23%' }} onClick={() => setActiveImage(fittedImages[8])} />
-
-            {/* Bottom Row */}
-            <GalleryItem src={fittedImages[9]} style={{ bottom: '-10%', left: '23%', width: '12%', height: '24%' }} onClick={() => setActiveImage(fittedImages[9])} />
-            <GalleryItem src={fittedImages[10]} style={{ bottom: '-8%', left: '40%', width: '10%', height: '27%' }} onClick={() => setActiveImage(fittedImages[10])} />
-            <GalleryItem src={fittedImages[11]} style={{ bottom: '-12%', left: '55%', width: '11%', height: '25%' }} onClick={() => setActiveImage(fittedImages[11])} />
-            <GalleryItem src={fittedImages[12]} style={{ bottom: '-5%', left: '72%', width: '10%', height: '22%' }} onClick={() => setActiveImage(fittedImages[12])} />
-
-            {/* Branding W. Badge */}
-          </div>
-
-          <div className="mt-40 text-center">
-            <button 
-              onClick={() => setShowAll(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all shadow-xl hover:-translate-y-1"
-            >
-              See all photos <Plus size={20} />
-            </button>
-          </div>
+    <section className="w-full py-24 bg-gray-50 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-16">
+          <h2 className="text-6xl sm:text-7xl md:text-9xl font-black text-black tracking-tighter leading-none mb-6">BHIM JAYANTI 2K25</h2>
+          <p className="text-gray-600 ml-5 max-w-sm text-lg font-medium leading-relaxed">
+            The pulse of our story, told one post at a time.
+          </p>
         </div>
-      </section>
+
+        {/* Grid - Refined Masonry-like Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[300px]">
+          {galleryItems.map((item, index) => {
+            // Assign specific spans for a masonry feel
+            let span = item.span || '';
+            if (index === 0) span = 'lg:col-span-2 lg:row-span-2';
+            if (index === 3 || index === 5 || index === 6) span = 'lg:row-span-2';
+            
+            return (
+              <GalleryCard 
+                key={item.id} 
+                item={{...item, span}} 
+                onClick={() => item.src && setActiveImage(item.src)} 
+              />
+            );
+          })}
+        </div>
+
+        {/* See More Button - Navigates to /gallery */}
+        <div className="mt-20 text-center">
+          <Link 
+            href="/gallery"
+            className="inline-flex flex-col items-center gap-4 group transition-all"
+          >
+            <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center lg:group-hover:bg-black lg:group-hover:text-white transition-all duration-300 shadow-xl text-black">
+              <Plus size={36} />
+            </div>
+            <span className="font-bold uppercase tracking-[0.2em] text-xs text-black transition-colors group-hover:text-gray-600">Explore All Memories</span>
+          </Link>
+        </div>
+      </div>
 
       {/* Lightbox Modal */}
       {activeImage && (
         <div 
-          className="fixed inset-0 z-[100] backdrop-blur-3xl bg-black/90 flex items-center justify-center animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] backdrop-blur-xl bg-black/90 flex items-center justify-center p-4"
           onClick={() => setActiveImage(null)}
         >
-          <button onClick={() => setActiveImage(null)} className="absolute top-6 right-6 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors">
-            <X size={28} />
+          <button onClick={() => setActiveImage(null)} className="absolute top-6 right-6 p-2 bg-white text-black rounded-full shadow-2xl">
+            <X size={24} />
           </button>
-          <div className="relative w-[90vw] h-[90vh]" onClick={(e) => e.stopPropagation()}>
-            <Image src={activeImage} alt="Gallery image" fill className="object-contain" priority />
+          <div className="relative w-full max-w-5xl h-[80vh]" onClick={(e) => e.stopPropagation()}>
+            <Image src={activeImage} alt="Gallery item" fill className="object-contain" priority />
           </div>
         </div>
       )}
-
-      {/* Full Gallery Overlay */}
-      {showAll && (
-        <div className="fixed inset-0 z-[110] bg-[#e0e0e0] overflow-y-auto animate-in slide-in-from-bottom duration-500 pb-20">
-           <div className="sticky top-0 z-20 bg-[#e0e0e0]/80 backdrop-blur-md p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-              <h2 className="text-3xl font-black uppercase">The Full Archive</h2>
-              <button 
-                onClick={() => setShowAll(false)}
-                className="p-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-              >
-                <X size={24} />
-              </button>
-           </div>
-           
-           <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 mt-8">
-              {allImages.map((src, idx) => (
-                <div 
-                  key={idx} 
-                  className="aspect-[4/5] relative rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-                  onClick={() => setActiveImage(src)}
-                >
-                  <Image src={src} alt={`Archive ${idx}`} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                </div>
-              ))}
-           </div>
-        </div>
-      )}
-    </>
+    </section>
   )
 }
 
-function GalleryItem({ src, style, onClick }: { src: string, style: any, onClick: () => void }) {
+function GalleryCard({ item, onClick }: { item: GalleryItemData, onClick: () => void }) {
+  const baseClasses = `relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[0.98] ${item.span || ''}`;
+  
+  if (item.type === 'text') {
+    return (
+      <div className={`${baseClasses} ${item.color || 'bg-gray-100'} p-8 flex flex-col justify-between`} onClick={onClick}>
+        <div className="w-8 h-8 rounded-full border-2 border-black/10"></div>
+        <h3 className="text-2xl font-bold text-black/80 leading-tight">{item.title}</h3>
+      </div>
+    );
+  }
+
   return (
-    <div 
-      className="absolute border-2 border-white/20 rounded-xl overflow-hidden shadow-lg group cursor-pointer transition-all duration-300 hover:z-30 hover:scale-105 hover:shadow-2xl" 
-      style={style}
-      onClick={onClick}
-    >
-      <Image src={src} alt="Past event" fill className="object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+    <div className={baseClasses} onClick={onClick}>
+      {item.src && (
+        <Image 
+          src={item.src} 
+          alt={item.title || 'Gallery image'} 
+          fill 
+          className="object-cover"
+        />
+      )}
+      
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+      
+      {item.title && (
+        <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end">
+           {item.icon === 'instagram' && <Instagram className="text-white mb-3" size={28} />}
+           {item.icon === 'x' && <Twitter className="text-white mb-3" size={28} />}
+           {item.icon === 'shorts' && <PlayCircle className="text-white mb-3" size={28} />}
+           <h3 className="text-white font-bold text-xl leading-snug tracking-tight">{item.title}</h3>
+        </div>
+      )}
+
+      {!item.title && item.icon && (
+        <div className="absolute top-8 left-8">
+           {item.icon === 'instagram' && <Instagram className="text-white" size={32} strokeWidth={1.5} />}
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
