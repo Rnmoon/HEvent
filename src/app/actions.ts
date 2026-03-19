@@ -52,7 +52,19 @@ export async function identifyUser(formData: FormData) {
   redirect('/dashboard')
 }
 
-import { unstable_cache } from 'next/cache'
+import { cache } from 'react'
+
+// Memoize user data per request to prevent hitting the DB multiple times in the same render
+const getCachedUser = cache(async (userToken: string) => {
+  try {
+    return await prisma.user.findUnique({
+      where: { user_token: userToken }
+    })
+  } catch (error) {
+    console.error('Database lookup failed in getCachedUser:', error)
+    return null
+  }
+})
 
 export async function getCurrentUser() {
   const cookieStore = await cookies()
@@ -60,25 +72,10 @@ export async function getCurrentUser() {
 
   if (!token) return null
 
-  // Cache user data to prevent hitting the DB on every page load
-  const getCachedUser = unstable_cache(
-    async (userToken: string) => {
-      try {
-        return await prisma.user.findUnique({
-          where: { user_token: userToken }
-        })
-      } catch (error) {
-        console.error('Database unreachable in getCurrentUser:', error)
-        return null
-      }
-    },
-    ['current-user'],
-    { tags: ['user'], revalidate: 60 } // Revalidate every 60 seconds
-  )
-
   try {
     return await getCachedUser(token)
   } catch (error) {
+    console.error('Error in getCurrentUser:', error)
     return null
   }
 }
